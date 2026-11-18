@@ -1,0 +1,9 @@
+{
+ "n_train": 2484,
+ "tok_mean": 416.6867954911433,
+ "tok_p95": 473,
+ "tok_max": 1077,
+ "n_over_max_seq": 1,
+ "max_seq_length": 1024,
+ "eff_batch": 16
+}

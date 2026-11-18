@@ -1,0 +1,75 @@
+# LogSigma: SemEval-2026 Task 3, Subtask 1 (DimASR), English, restaurant domain.
+# Predict Valence/Arousal for each (sentence, aspect). Olympic AI 2026 problem 1: Subtask 1, metric RMSE_VA.
+# Method from the LogSigma paper (Table 6): Tw-RoBERTa-large + 2-output regression head,
+# V/A loss balancing with homoscedastic uncertainty (learned log sigma^2), average of 3 seeds.
+#
+# Run:     python -m logsigma.train                    (uses this file)
+#          python -m logsigma.train --run_name try1    (name of the output folder)
+# Output:  outputs/logsigma/<run.name>/
+# Timing on a Kaggle T4: ~35 s/epoch per run, early stop after 5-11 epochs -> ~5 min per run, peak VRAM 8.2 GB.
+
+run:
+  name: null                    # null = current time (YYYYmmdd_HHMMSS)
+  output_root: outputs          # relative to the repo root
+
+hardware:
+  device: auto                  # auto (cuda if available) | cuda | cpu
+  amp_dtype: float16            # mixed precision on cuda. T4 has no bf16; A100/L4 can use bfloat16
+
+# -------- data (DimABSA2026 repo, fetched at run time at a pinned commit) --------
+data:
+  repo_url: https://github.com/DimABSA/DimABSA2026.git
+  repo_commit: bdc93be1224106ae7d3eb95739c02a76ed4ae8a1
+  repo_dir: .cache/DimABSA2026
+  task_dir: task-dataset/track_a/subtask_1/eng
+  train_file: eng_restaurant_train_alltasks.jsonl
+  dev_file: eng_restaurant_dev_task1.jsonl
+  test_file: eng_restaurant_test_task1.jsonl
+  scorer: evaluation_script/metrics_subtask_1_2_3.py
+  drop_null_aspect: true        # train: skip quadruplets with Aspect=NULL (as the original notebook; English dev/test have none)
+  input_template: "{text} [SEP] {aspect}"
+  max_length: 128
+  va_range: [1.0, 9.0]          # predictions are clipped to the VA scale
+  train_limit: null             # null = all 2779 pairs. N = first N pairs only, for a quick test
+
+# -------- model --------
+model:
+  encoder: cardiffnlp/twitter-roberta-large-topic-sentiment-latest
+  dropout: 0.1
+  log_var_init_range: [0.2, 1.0]  # sigma^2 ~ U(0.2, 1.0) at init, log_var = log sigma^2
+
+# -------- training (paper Table 6) --------
+train:
+  batch_size: 16
+  grad_accum: 4                 # effective batch 64
+  max_epochs: 25
+  lr_encoder: 2.0e-5            # encoder + regression head
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  grad_clip: 1.0
+  early_stop_patience: 3        # on dev RMSE_VA
+  eval_batch_size: 64
+
+# -------- runs (trained one after another) --------
+# use_uncertainty: true  -> loss = sum 0.5*exp(-s)*MSE + 0.5*s   (s = log sigma^2, learned with lr_uncertainty)
+# use_uncertainty: false -> loss = MSE_V + MSE_A                 (ablation "w/o uncertainty")
+runs:
+  - {name: seed21_paper, seed: 21, use_uncertainty: true,  lr_uncertainty: 5.0e-2, enabled: true}
+  - {name: seed99_paper, seed: 99, use_uncertainty: true,  lr_uncertainty: 5.0e-2, enabled: true}
+  - {name: seed42_paper, seed: 42, use_uncertainty: true,  lr_uncertainty: 5.0e-2, enabled: true}
+  - {name: seed42_nb,    seed: 42, use_uncertainty: true,  lr_uncertainty: 2.0e-5, enabled: false}  # public notebook behaviour: lr too small, sigma^2 barely moves
+  - {name: seed21_mse,   seed: 21, use_uncertainty: false, lr_uncertainty: null,   enabled: false}
+  - {name: seed99_mse,   seed: 99, use_uncertainty: false, lr_uncertainty: null,   enabled: false}
+  - {name: seed42_mse,   seed: 42, use_uncertainty: false, lr_uncertainty: null,   enabled: false}
+
+# average of the (clipped) predictions; computed only when every member run has finished
+ensembles:
+  ensemble3: [seed21_paper, seed99_paper, seed42_paper]
+  ensemble3_mse: [seed21_mse, seed99_mse, seed42_mse]
+
+# -------- logging --------
+log:
+  step_interval: 10             # every N optimizer steps write one line to runs/<run>/steps.csv (loss, MSE V/A, sigma^2, lr)
+  gpu_monitor_interval_s: 30    # nvidia-smi -> gpu_util.csv; 0 = off
+  env_packages: [torch, transformers, numpy, scipy]
+  save_checkpoint_runs: []      # e.g. [seed42_paper]: save the best checkpoint (fp16, ~0.7 GB) for attribution analysis

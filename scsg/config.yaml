@@ -1,0 +1,89 @@
+# SCSG (nchellwig, 2nd place SemEval-2026 Task 3): extract quadruples (Aspect, Category, Opinion, V#A), English, restaurant.
+# Olympic AI 2026 problem 1: Subtask 2 (DimASQP), metric cF1. In SemEval numbering this task is subtask 3.
+# Method: QLoRA fine-tune an LLM to generate the tuple list -> self-consistency: sample n outputs at temperature 0.8,
+# keep tuples proposed by a majority of samples, V/A = mean. The author used Gemma-3 27B; default here is 4B to fit one T4.
+#
+# Run:     python -m scsg.run                    (train -> inference -> scoring)
+#          python -m scsg.run --run_name try1
+# Output:  outputs/scsg/<run.name>/. Re-running with the same run.name skips phases whose raw_* file exists (resume).
+# Estimated time on one T4 (measured on Kaggle 2xT4, converted):
+#   training 5 epochs on 2484 sentences: ~3.4 h;  self-consistency (15 samples) on 1000 test sentences: ~3.5 h (~12.5 s/sentence).
+#   Quick try: train.max_steps = 30, data.eval_limit = 20, infer.phases.sc.n = 5.
+
+seed: 0                         # the author's seed_run (set_seed + LoRA random_state + SFT seed)
+
+run:
+  name: null                    # null = current time (YYYYmmdd_HHMMSS)
+  output_root: outputs          # relative to the repo root
+
+hardware:
+  alloc_conf: "expandable_segments:True"   # PYTORCH_CUDA_ALLOC_CONF, reduces GPU memory fragmentation
+
+# -------- data and original code (fetched at run time at a pinned commit) --------
+data:
+  dimabsa_repo_url: https://github.com/DimABSA/DimABSA2026.git
+  dimabsa_repo_commit: bdc93be1224106ae7d3eb95739c02a76ed4ae8a1
+  dimabsa_dir: .cache/DimABSA2026
+  # the author's helper.py: data loading, prompt, output parser. Used as is so prompts and parsing are identical.
+  helper_url: https://raw.githubusercontent.com/NilsHellwig/nchellwig-dimabsa/d1193de0af006ebb7b63a5ddd4681d3d3a03b59b/helper.py
+  helper_path: .cache/nchellwig/helper.py
+  subtask: 3                    # SemEval numbering: 3 = DimASQP (quadruples)
+  language: eng
+  domain: restaurant
+  strategy: test-train_dev      # test-train_dev: train on train+dev, score on test (submission) | dev-train: train on train, score on dev
+  eval_limit: null              # null = whole evaluation set; N = first N sentences only (quick try)
+  gold_dir: task-dataset/track_a/subtask_3/eng
+  scorer: evaluation_script/metrics_subtask_1_2_3.py
+
+# -------- model --------
+model:
+  name: unsloth/gemma-3-4b-it-bnb-4bit   # 12B: unsloth/gemma-3-12b-it-bnb-4bit (on a T4 use batch 2 x 8; very slow)
+  chat_family: gemma            # gemma | mistral | qwen: chat tags as in the author's llm.py
+  max_seq_length: 1024
+  dtype: float16                # T4 has no bf16; A100/L4 can use bfloat16
+  lora:
+    r: 64
+    alpha: 16
+    dropout: 0.0
+    # backend hf only: modules selected by regex (backend unsloth picks attention + MLP of the language model itself)
+    hf_target_regex: ".*language_model.*\\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)"
+
+# -------- training (the author's llm.py) --------
+train:
+  enabled: true                 # false = skip training and use infer.adapter
+  backend: unsloth              # unsloth (as the author) | hf (transformers + peft, fallback if unsloth breaks)
+  max_steps: null               # null = full epochs; N = stop after N steps (quick try)
+  epochs: 5
+  per_device_batch_size: 4      # 4 x 4 = 16 as the author. On OOM use 2 x 8
+  grad_accum: 4
+  lr: 2.0e-4
+  warmup_steps: 5
+  weight_decay: 0.001
+  optim: adamw_8bit
+  lr_scheduler: linear
+  logging_steps: 10             # every N steps log loss / lr to train_log_history.json
+  gradient_checkpointing: true
+
+# -------- inference --------
+infer:
+  enabled: true
+  adapter: null                 # null = the adapter just trained (<output>/adapter) | a folder path | a Hugging Face Hub repo id
+  loader: unsloth               # unsloth (fast, handles fp16 on T4) | transformers (+ peft, slower)
+  eval_seeds: [0]               # every seed reruns all phases (the author used 0..4 to report mean +- std)
+  max_new_tokens: 512
+  phases:                       # raw outputs of each phase are saved as soon as it finishes
+    greedy: {temperature: 0.0, n: 1}
+    sc:     {temperature: 0.8, n: 15}    # self-consistency: 15 samples per sentence
+  greedy_batch: 8               # sentences per generate call in greedy decoding; halved automatically on OOM
+  sc_chunk: 15                  # samples per sentence per generate call
+  sc_batch_prompts: 4           # sentences per generate call when sampling (4 x 15 sequences); halved automatically on OOM
+
+# -------- scoring --------
+score:
+  min_votes: null               # null = majority (n // 2 + 1) as the author; or a fixed number
+  null_modes: [drop, keep]      # drop = remove Aspect=NULL tuples as the author (English test has no NULL) | keep = keep them
+
+# -------- logging --------
+log:
+  gpu_monitor_interval_s: 30    # nvidia-smi -> gpu_util.csv; 0 = off
+  env_packages: [torch, transformers, trl, peft, unsloth, bitsandbytes, accelerate, datasets]

@@ -1,0 +1,19 @@
+{
+ "run": {
+  "name": "seed21_paper",
+  "seed": 21,
+  "use_uncertainty": true,
+  "lr_uncertainty": 0.05,
+  "enabled": true
+ },
+ "best_epoch": 5,
+ "epochs_run": 8,
+ "best_dev_rmse": 0.9916331289207126,
+ "test_rmse": 1.2184001344805622,
+ "var_at_best": [
+  0.36823516459430833,
+  0.3570610242299644
+ ],
+ "train_sec": 284.5668594837189,
+ "official_test_line": "Final Results: {'PCC_V': np.float64(0.8984068258232687), 'PCC_A': np.float64(0.6314791099378676), 'RMSE_VA': 1.2184098406913895}"
+}

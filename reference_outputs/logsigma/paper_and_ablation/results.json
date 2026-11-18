@@ -1,0 +1,162 @@
+{
+ "source": "Kaggle 2xT4 run f0dd3e7107b7 (previous code version, same hyperparameters)",
+ "runs": {
+  "seed21_paper": {
+   "run": {
+    "name": "seed21_paper",
+    "seed": 21,
+    "use_uncertainty": true,
+    "lr_uncertainty": 0.05,
+    "enabled": true
+   },
+   "best_epoch": 5,
+   "epochs_run": 8,
+   "best_dev_rmse": 0.9916331289207126,
+   "test_rmse": 1.2184001344805622,
+   "var_at_best": [
+    0.36823516459430833,
+    0.3570610242299644
+   ],
+   "train_sec": 284.5668594837189,
+   "official_test_line": "Final Results: {'PCC_V': np.float64(0.8984068258232687), 'PCC_A': np.float64(0.6314791099378676), 'RMSE_VA': 1.2184098406913895}"
+  },
+  "seed99_paper": {
+   "run": {
+    "name": "seed99_paper",
+    "seed": 99,
+    "use_uncertainty": true,
+    "lr_uncertainty": 0.05,
+    "enabled": true
+   },
+   "best_epoch": 2,
+   "epochs_run": 5,
+   "best_dev_rmse": 1.3327394035686122,
+   "test_rmse": 1.1784874476818374,
+   "var_at_best": [
+    1.021164949672386,
+    0.7642904124800217
+   ],
+   "train_sec": 167.1494631767273,
+   "official_test_line": "Final Results: {'PCC_V': np.float64(0.8976730623518354), 'PCC_A': np.float64(0.6483728122239485), 'RMSE_VA': 1.1783591921134648}"
+  },
+  "seed42_paper": {
+   "run": {
+    "name": "seed42_paper",
+    "seed": 42,
+    "use_uncertainty": true,
+    "lr_uncertainty": 0.05,
+    "enabled": true
+   },
+   "best_epoch": 3,
+   "epochs_run": 6,
+   "best_dev_rmse": 0.9365472102960174,
+   "test_rmse": 1.1923028484168097,
+   "var_at_best": [
+    0.5759789288784043,
+    0.5949579672467527
+   ],
+   "train_sec": 201.49673914909363,
+   "official_test_line": "Final Results: {'PCC_V': np.float64(0.892602632078092), 'PCC_A': np.float64(0.6287640981039477), 'RMSE_VA': 1.1924335366642882}"
+  },
+  "seed42_nb": {
+   "run": {
+    "name": "seed42_nb",
+    "seed": 42,
+    "use_uncertainty": true,
+    "lr_uncertainty": 2e-05,
+    "enabled": true
+   },
+   "best_epoch": 3,
+   "epochs_run": 6,
+   "best_dev_rmse": 0.9676720982307971,
+   "test_rmse": 1.2432552586018166,
+   "var_at_best": [
+    0.9108077452394291,
+    0.4174842776329569
+   ],
+   "train_sec": 213.32712078094482,
+   "official_test_line": "Final Results: {'PCC_V': np.float64(0.8946923353669989), 'PCC_A': np.float64(0.6226334419853802), 'RMSE_VA': 1.2433752910371438}"
+  },
+  "seed21_mse": {
+   "run": {
+    "name": "seed21_mse",
+    "seed": 21,
+    "use_uncertainty": false,
+    "lr_uncertainty": null,
+    "enabled": true
+   },
+   "best_epoch": 5,
+   "epochs_run": 8,
+   "best_dev_rmse": 1.0276906405212598,
+   "test_rmse": 1.1985556551586265,
+   "var_at_best": [
+    0.6144648241627196,
+    0.28787030841393135
+   ],
+   "train_sec": 269.3987982273102,
+   "official_test_line": "Final Results: {'PCC_V': np.float64(0.903089403138741), 'PCC_A': np.float64(0.6366493273106932), 'RMSE_VA': 1.1985010862420626}"
+  },
+  "seed99_mse": {
+   "run": {
+    "name": "seed99_mse",
+    "seed": 99,
+    "use_uncertainty": false,
+    "lr_uncertainty": null,
+    "enabled": true
+   },
+   "best_epoch": 8,
+   "epochs_run": 11,
+   "best_dev_rmse": 1.0799688393412954,
+   "test_rmse": 1.268904882151147,
+   "var_at_best": [
+    0.8601628529814235,
+    0.5593006591966931
+   ],
+   "train_sec": 388.3489191532135,
+   "official_test_line": "Final Results: {'PCC_V': np.float64(0.8965385410739364), 'PCC_A': np.float64(0.6411023739672846), 'RMSE_VA': 1.2689642021257321}"
+  },
+  "seed42_mse": {
+   "run": {
+    "name": "seed42_mse",
+    "seed": 42,
+    "use_uncertainty": false,
+    "lr_uncertainty": null,
+    "enabled": true
+   },
+   "best_epoch": 2,
+   "epochs_run": 5,
+   "best_dev_rmse": 1.1088309245861268,
+   "test_rmse": 1.1757366600028494,
+   "var_at_best": [
+    0.9109257486597656,
+    0.41730910613463335
+   ],
+   "train_sec": 168.54018354415894,
+   "official_test_line": "Final Results: {'PCC_V': np.float64(0.9007090802989877), 'PCC_A': np.float64(0.6437368039015271), 'RMSE_VA': 1.1756185277854123}"
+  }
+ },
+ "ensembles": {
+  "ensemble3": {
+   "members": [
+    "seed21_paper",
+    "seed99_paper",
+    "seed42_paper"
+   ],
+   "dev_rmse": 1.0089195353027642,
+   "test_rmse": 1.1045592000055122,
+   "official_test": "Final Results: {'PCC_V': np.float64(0.9065272771425807), 'PCC_A': np.float64(0.6565426616750902), 'RMSE_VA': 1.1045485021568864}",
+   "official_dev": "Final Results: {'PCC_V': np.float64(0.9214610386762296), 'PCC_A': np.float64(0.6862225561582272), 'RMSE_VA': 1.0089573826480482}"
+  },
+  "ensemble3_mse": {
+   "members": [
+    "seed21_mse",
+    "seed99_mse",
+    "seed42_mse"
+   ],
+   "dev_rmse": 1.0127262603679277,
+   "test_rmse": 1.146059391149082,
+   "official_test": "Final Results: {'PCC_V': np.float64(0.9091897590510194), 'PCC_A': np.float64(0.6540236563036228), 'RMSE_VA': 1.1459805450244207}",
+   "official_dev": "Final Results: {'PCC_V': np.float64(0.9238697534492435), 'PCC_A': np.float64(0.6992707608532641), 'RMSE_VA': 1.013016462324861}"
+  }
+ }
+}

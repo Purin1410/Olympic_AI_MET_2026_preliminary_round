@@ -1,0 +1,6 @@
+{
+ "train_sec": 6190.180189847946,
+ "steps": 780,
+ "peak_mem_gb": 5.5503744,
+ "note": "Kaggle 2\u00d7T4 DDP"
+}

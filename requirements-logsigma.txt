@@ -1,0 +1,5 @@
+# LogSigma. Colab already has torch; this set ran on Kaggle (torch 2.11, CUDA 13).
+transformers==5.20.2
+numpy
+scipy        # official DimABSA2026 scorer
+pyyaml

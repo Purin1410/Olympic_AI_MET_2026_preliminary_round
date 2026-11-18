@@ -1,0 +1,104 @@
+{
+ "source": "Kaggle 2xT4 runs (previous code version, same hyperparameters); predictions re-scored with scsg.evaluate + official scorer",
+ "model": "unsloth/gemma-3-12b-it-bnb-4bit",
+ "results": {
+  "greedy_s0_test_nulldrop": {
+   "phase": "greedy",
+   "eval_seed": 0,
+   "null_mode": "drop",
+   "TP": 1241.012193052437,
+   "FP": 453.0,
+   "FN": 792.0,
+   "cPrecision": 0.6933029011466129,
+   "cRecall": 0.5829084983806655,
+   "cF1": 0.6333310502946858,
+   "official": "Final Results: {'TP': 1241.012193052437, 'FP': 453, 'FN': 792, 'cPrecision': 0.6933029011466129, 'cRecall': 0.5829084983806655, 'cF1': 0.6333310502946858}",
+   "parse_ok_rate": 1.0,
+   "min_votes": null,
+   "n_pred_tuples": 1790,
+   "n_sent": 1000
+  },
+  "greedy_s0_test_nullkeep": {
+   "phase": "greedy",
+   "eval_seed": 0,
+   "null_mode": "keep",
+   "TP": 1241.0121930524379,
+   "FP": 736.0,
+   "FN": 792.0,
+   "cPrecision": 0.598655182369724,
+   "cRecall": 0.5829084983806659,
+   "cF1": 0.5906769124476144,
+   "official": "Final Results: {'TP': 1241.0121930524379, 'FP': 736, 'FN': 792, 'cPrecision': 0.598655182369724, 'cRecall': 0.5829084983806659, 'cF1': 0.5906769124476144}",
+   "parse_ok_rate": 1.0,
+   "min_votes": null,
+   "n_pred_tuples": 2073,
+   "n_sent": 1000
+  },
+  "sc_s0_test_nulldrop": {
+   "phase": "sc",
+   "eval_seed": 0,
+   "null_mode": "drop",
+   "TP": 1195.6068622894566,
+   "FP": 325.0,
+   "FN": 846.0,
+   "cPrecision": 0.7435366059014034,
+   "cRecall": 0.5615814289757899,
+   "cF1": 0.6398752273424975,
+   "official": "Final Results: {'TP': 1195.6068622894566, 'FP': 325, 'FN': 846, 'cPrecision': 0.7435366059014034, 'cRecall': 0.5615814289757899, 'cF1': 0.6398752273424975}",
+   "parse_ok_rate": 0.9974,
+   "min_votes": 8,
+   "n_pred_tuples": 1608,
+   "n_sent": 1000
+  },
+  "sc_s0_test_nullkeep": {
+   "phase": "sc",
+   "eval_seed": 0,
+   "null_mode": "keep",
+   "TP": 1195.6068622894547,
+   "FP": 529.0,
+   "FN": 846.0,
+   "cPrecision": 0.6598271866939596,
+   "cRecall": 0.561581428975789,
+   "cF1": 0.6067530384620424,
+   "official": "Final Results: {'TP': 1195.6068622894547, 'FP': 529, 'FN': 846, 'cPrecision': 0.6598271866939596, 'cRecall': 0.561581428975789, 'cF1': 0.6067530384620424}",
+   "parse_ok_rate": 0.9974,
+   "min_votes": 8,
+   "n_pred_tuples": 1812,
+   "n_sent": 1000
+  },
+  "_by_seed": {
+   "greedy_nulldrop": {
+    "n_seeds": 1,
+    "cF1_mean": 0.6333310502946858,
+    "cF1_std": 0.0,
+    "cF1_all": [
+     0.6333310502946858
+    ]
+   },
+   "greedy_nullkeep": {
+    "n_seeds": 1,
+    "cF1_mean": 0.5906769124476144,
+    "cF1_std": 0.0,
+    "cF1_all": [
+     0.5906769124476144
+    ]
+   },
+   "sc_nulldrop": {
+    "n_seeds": 1,
+    "cF1_mean": 0.6398752273424975,
+    "cF1_std": 0.0,
+    "cF1_all": [
+     0.6398752273424975
+    ]
+   },
+   "sc_nullkeep": {
+    "n_seeds": 1,
+    "cF1_mean": 0.6067530384620424,
+    "cF1_std": 0.0,
+    "cF1_all": [
+     0.6067530384620424
+    ]
+   }
+  }
+ }
+}

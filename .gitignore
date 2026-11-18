@@ -1,0 +1,29 @@
+# run outputs and downloaded data / original author code (fetched at run time)
+outputs/
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# notebooks
+.ipynb_checkpoints/
+
+# model weights and large binaries
+*.pt
+*.bin
+*.safetensors
+adapter/
+wandb/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# local agent runs
+.cx/
